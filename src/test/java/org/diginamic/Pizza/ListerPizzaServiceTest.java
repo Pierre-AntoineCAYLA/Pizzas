@@ -1,15 +1,27 @@
 package org.diginamic.Pizza;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import java.util.Scanner;
+
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.SystemOutRule;
+
+import fr.pizzeria.dao.IPizzaDao;
+import fr.pizzeria.dao.PizzaMemDao;
+import fr.pizzeria.services.ListerPizzasService;
 
 public class ListerPizzaServiceTest {
-
-	@Test
+	@Rule
+	public SystemOutRule systemOutRule = new SystemOutRule().enableLog();
+	@org.junit.Test
 	public void test() {
-		fail("Not yet implemented");
-		dfgfdg
+		IPizzaDao pizzas = new PizzaMemDao();
+		ListerPizzasService listerPizzasService= new ListerPizzasService();
+		listerPizzasService.executeUC(new Scanner(System.in), pizzas);
+		assertTrue( systemOutRule.getLog().contains("PEP"));
+		assertTrue( systemOutRule.getLog().contains("FRO"));
+		assertTrue( systemOutRule.getLog().contains("CAN"));
 	}
 
 }

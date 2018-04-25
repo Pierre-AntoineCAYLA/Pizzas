@@ -1,27 +1,27 @@
 package org.diginamic.Pizza;
 
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Scanner;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.*;
-import org.junit.After;
 import org.junit.Rule;
-import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 
+import fr.pizzeria.dao.IPizzaDao;
 import fr.pizzeria.dao.PizzaMemDao;
-import fr.pizzeria.services.AjouterPizzaService;
+import fr.pizzeria.services.AuRevoirService;
 
 public class AuRevoirServiceTest {
 	@Rule
-	public TextFromStandardInputStream systemInMock = emptyStandardInputStream();
+	public SystemOutRule systemOutRule = new SystemOutRule().enableLog();
 
-	@After
+	@org.junit.Test
 	public void executeUCTest() {
-		AjouterPizzaService aps = new AjouterPizzaService();
-		PizzaMemDao pizza = new PizzaMemDao();
-		aps.executeUC(new Scanner(System.in), pizza);
-		assertTrue(pizza.findAllPizzas().contains(p));
+		AuRevoirService auRevoirService= new AuRevoirService();
+		IPizzaDao pizzas = new PizzaMemDao();			
+		auRevoirService.executeUC(new Scanner(System.in), pizzas);
+		assertTrue( systemOutRule.getLog().equals("Au revoir\r\n"));
 		
 	}
 }
