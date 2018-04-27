@@ -6,7 +6,7 @@ import fr.pizzeria.model.Pizza;
 public class App {
 	public static void main(String[] args) {
 		PizzaDbDao pizzas = new PizzaDbDao();
-		Pizza pz = new Pizza(1, "car", "carbonara", 12.0);
+		Pizza pz = new Pizza(1, "CAR", "Carbonara", 12.0);
 		Pizza pz1 = (new Pizza("PEP", "Peperoni", 12.50));
 		Pizza pz2 = (new Pizza("MAR", "Margherita", 14.00));
 		Pizza pz3 = (new Pizza("REIN", "La Reine", 11.50));

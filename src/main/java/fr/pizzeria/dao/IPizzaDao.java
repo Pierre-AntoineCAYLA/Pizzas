@@ -13,6 +13,8 @@ public interface IPizzaDao {
 
 	void deletePizza(String codePizza);
 
+	void reinitialiserPizza();
+
 	Pizza findPizzaByCode(String codePizza);
 
 	boolean pizzaExists(String codePizza);

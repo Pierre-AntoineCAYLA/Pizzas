@@ -23,6 +23,7 @@ public class PizzaDbDao implements IPizzaDao {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pizza", "root", "");
+
 		} catch (ClassNotFoundException e) {
 			LOG.error(e.getMessage());
 		} catch (SQLException e) {
@@ -129,4 +130,38 @@ public class PizzaDbDao implements IPizzaDao {
 		return exist;
 
 	}
+
+	public void reinitialiserPizza() {
+
+		PreparedStatement deletePizzas;
+		List<Pizza> pizzas = new ArrayList<Pizza>();
+		pizzas.add(new Pizza("PEP", "Peperoni", 12.50));
+		pizzas.add(new Pizza("MAR", "Margherita", 14.00));
+		pizzas.add(new Pizza("REIN", "La Reine", 11.50));
+		pizzas.add(new Pizza("FRO", "La 4 fromages", 12.00));
+		pizzas.add(new Pizza("CAN", "La cannibale", 12.50));
+		pizzas.add(new Pizza("SAV", "La savoyarde", 13.00));
+		pizzas.add(new Pizza("ORI", "L'orientale", 13.50));
+		pizzas.add(new Pizza("IND", "L'indienne", 14.00));
+
+		try {
+			deletePizzas = conn.prepareStatement("DELETE FROM pizza");
+			deletePizzas.executeUpdate();
+			deletePizzas.close();
+			PreparedStatement reinitialisePizzas = conn
+					.prepareStatement("INSERT INTO pizza(CODE, NAME, PRICE) VALUES (?,?,?)");
+			for (Pizza piz : pizzas) {
+
+				reinitialisePizzas.setString(1, piz.getCode());
+				reinitialisePizzas.setString(2, piz.getLibelle());
+				reinitialisePizzas.setDouble(3, piz.getPrix());
+				reinitialisePizzas.executeUpdate();
+			}
+			reinitialisePizzas.close();
+
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
+	}
+
 }
