@@ -1,72 +1,134 @@
 package fr.pizzeria.dao;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import javax.sql.*;
 
-import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.pizzeria.model.Pizza;
 
 public class PizzaDbDao implements IPizzaDao {
 
-	{
-		try{
-	Class.forName("com.mysql.jdbc.Driver");
-	catch(Exception e){
-	Connection myConnection = DriverManager.getConnection(« jdbc:mysql://localhost:3306/pizza?useSSL=false», «root», «»);
-	ResultSet resultats = statement.executeQuery("SELECT * FROM pizza");
-	while (resultats.next()){}
+	private static final Logger LOG = LoggerFactory.getLogger(PizzaDbDao.class);
+	private Connection conn;
+
+	public PizzaDbDao() {
+
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/pizza, «root», «»");
+		} catch (ClassNotFoundException e) {
+			LOG.error(e.getMessage());
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+			e.printStackTrace();
 		}
-		
-		return null;
-	for(
-	Pizza pizza:dao.findAllPizzas())
-	{
-		PreparedStatement insertPizza = conn.prepareStatement("INSERT INTO pizza(PRIX, NAME, PRICE) VALUES (?,?,?)");
-		Statement statement = connection.createStatement();
-
-		insertPizza.setDouble(1, pizza.getPrix());
-
-		insertPizza.setString(2, pizza.getLibelle());
-
-		insertPizza.setString(3, pizza.getCode());
-
-		insertPizza.executeUpdate();
-
-		System.out.println(pizza.getLibelle() + " inséré");
 	}
-	ResultSet resultats = selectPizzaSt.executeQuery();
-}
 
 	public List<Pizza> findAllPizzas() {
-		// TODO Auto-generated method stub
-		return null;
+
+		PreparedStatement selectAllPizzas;
+		ArrayList<Pizza> pizzas = new ArrayList<Pizza>();
+		try {
+			selectAllPizzas = conn.prepareStatement("INSERT INTO pizza(PRIX, NAME, PRICE) VALUES (?,?,?)");
+
+			ResultSet resultats = selectAllPizzas.executeQuery();
+			while (resultats.next()) {
+				Integer id = resultats.getInt("ID");
+				String code = resultats.getString("CODE");
+				String libelle = resultats.getString("LIBELLE");
+				double prix = resultats.getDouble("PRIX");
+				Pizza toAdd = new Pizza(id, code, libelle, prix);
+				pizzas.add(toAdd);
+
+			}
+			resultats.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
+		return pizzas;
+
 	}
 
 	public void saveNewPizza(Pizza pizza) {
-		// TODO Auto-generated method stub
+		PreparedStatement savePizzas;
+		try {
+			savePizzas = conn.prepareStatement("INSERT INTO pizza(CODE, NAME, PRICE) VALUES (?,?,?)");
+			savePizzas.setString(1, pizza.getCode());
+			savePizzas.setString(2, pizza.getLibelle());
+			savePizzas.setDouble(3, pizza.getPrix());
+			savePizzas.executeUpdate();
+			savePizzas.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
 
 	}
 
 	public void updatePizza(String codePizza, Pizza pizza) {
-		// TODO Auto-generated method stub
+		PreparedStatement upDatePizzas;
+		try {
+			upDatePizzas = conn.prepareStatement("UPDATE INTO pizza(CODE, NAME, PRICE) VALUES (?,?,?)WHERE CODE=?");
+			upDatePizzas.setString(1, pizza.getCode());
+			upDatePizzas.setString(2, pizza.getLibelle());
+			upDatePizzas.setDouble(3, pizza.getPrix());
+			upDatePizzas.setInt(4, pizza.getId());
+			upDatePizzas.setString(5, codePizza);
+			upDatePizzas.executeUpdate();
+			upDatePizzas.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
 
 	}
 
 	public void deletePizza(String codePizza) {
-		// TODO Auto-generated method stub
-
+		PreparedStatement deletePizzas;
+		try {
+			deletePizzas = conn.prepareStatement("DELETE FROM pizza WHERE CODE=?");
+			deletePizzas.setString(1, codePizza);
+			deletePizzas.executeUpdate();
+			deletePizzas.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
 	}
 
 	public Pizza findPizzaByCode(String codePizza) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Pizza pizza = null;
+		try {
+			PreparedStatement findPizzas = conn.prepareStatement("SELECT * FROM pizza WHERE CODE=?");
+			ResultSet resultats = findPizzas.executeQuery();
+			findPizzas.setString(1, codePizza);
+			pizza = new Pizza(resultats.getInt("ID"), resultats.getString("NAME"), resultats.getString("CODE"),
+					resultats.getDouble("PRICE"));
+			findPizzas.executeQuery();
+			findPizzas.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
+		return pizza;
 	}
 
 	public boolean pizzaExists(String codePizza) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean exist = false;
+		try {
+			PreparedStatement existPizzas = conn.prepareStatement("SELECT FROM pizza WHERE CODE=?");
+			ResultSet resultats = existPizzas.executeQuery();
+			existPizzas.setString(1, codePizza);
+			exist = !resultats.wasNull();
+			existPizzas.close();
+		} catch (SQLException e) {
+			LOG.error(e.getMessage());
+		}
+		return exist;
+
 	}
 }
