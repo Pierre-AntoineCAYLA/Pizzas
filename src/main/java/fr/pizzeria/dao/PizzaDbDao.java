@@ -22,7 +22,7 @@ public class PizzaDbDao implements IPizzaDao {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/pizza, «root», «»");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pizza", "root", "");
 		} catch (ClassNotFoundException e) {
 			LOG.error(e.getMessage());
 		} catch (SQLException e) {
@@ -36,14 +36,13 @@ public class PizzaDbDao implements IPizzaDao {
 		PreparedStatement selectAllPizzas;
 		ArrayList<Pizza> pizzas = new ArrayList<Pizza>();
 		try {
-			selectAllPizzas = conn.prepareStatement("INSERT INTO pizza(PRIX, NAME, PRICE) VALUES (?,?,?)");
-
+			selectAllPizzas = conn.prepareStatement("SELECT ID, CODE, NAME, PRICE FROM pizza");
 			ResultSet resultats = selectAllPizzas.executeQuery();
 			while (resultats.next()) {
 				Integer id = resultats.getInt("ID");
 				String code = resultats.getString("CODE");
-				String libelle = resultats.getString("LIBELLE");
-				double prix = resultats.getDouble("PRIX");
+				String libelle = resultats.getString("NAME");
+				double prix = resultats.getDouble("PRICE");
 				Pizza toAdd = new Pizza(id, code, libelle, prix);
 				pizzas.add(toAdd);
 
@@ -74,12 +73,11 @@ public class PizzaDbDao implements IPizzaDao {
 	public void updatePizza(String codePizza, Pizza pizza) {
 		PreparedStatement upDatePizzas;
 		try {
-			upDatePizzas = conn.prepareStatement("UPDATE INTO pizza(CODE, NAME, PRICE) VALUES (?,?,?)WHERE CODE=?");
+			upDatePizzas = conn.prepareStatement("UPDATE pizza SET CODE=?, NAME=?, PRICE=?  WHERE CODE=?");
 			upDatePizzas.setString(1, pizza.getCode());
 			upDatePizzas.setString(2, pizza.getLibelle());
 			upDatePizzas.setDouble(3, pizza.getPrix());
-			upDatePizzas.setInt(4, pizza.getId());
-			upDatePizzas.setString(5, codePizza);
+			upDatePizzas.setString(4, codePizza);
 			upDatePizzas.executeUpdate();
 			upDatePizzas.close();
 		} catch (SQLException e) {
